@@ -126,6 +126,28 @@ public class DocumentList extends HttpServlet {
 			}
 		}
 		
+		if(action.equals("Exclude"))
+		{
+			//System.out.println("in post");
+			//String par=request.getParameter("parentID");
+			String dataArray=request.getParameter("dataID");
+			String [] dataIDs=dataArray.split(",");
+			//String data=request.getParameter("dataID");
+			if((dataIDs.length!=0))
+			{
+				for(String s: dataIDs)
+				{
+					if(s!=null&&!s.equals(""))
+					{
+						int dataid=Integer.valueOf(s);
+						OTUtility.updateCategory(dataid);
+						PrintWriter os=response.getWriter();
+						os.write("<script type=text/javascript"+">window.close()</script>");
+					}
+				}
+			}
+		}
+		
 		
 		
 		 

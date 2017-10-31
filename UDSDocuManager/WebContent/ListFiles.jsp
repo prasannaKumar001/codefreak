@@ -123,10 +123,12 @@
 				//need to write logic to get parent id from DB
 				
 				List<Node> nodes=OTUtility.getChildren(85457);//parent ID
+				List<Node> nodes2=OTUtility.excludedNodes(85457);
 				
 				
 			%>	
 			<c:set var="n" value="<%=nodes%>"/>
+			<c:set var="k" value="<%=nodes2%>"/>
 			<div id="tabs"  >
   				
 				<ul>
@@ -142,7 +144,7 @@
 						  	<option id="Copy">Copy</option>
 						  	<option id="Move">Move</option>
 						  	<option value="Rename">Rename</option>
-						  	<option value="Exclude">Exclude</option>
+						  	<option id="Exclude">Exclude</option>
 						  	<option value="Retrieve">Retrieve</option>
 						 	 <option id="Delete">Delete</option>
 						  	<option value="Send">Send</option>
@@ -187,7 +189,41 @@
 	 			</form>
 	  		</div>
   			<div id="tabs-2">
-    			<p></p>
+    			<form name=form1 method=post>
+	   				<table id="Exclude" width="100%" border="0" cellspacing="1" cellpadding="0" class="browseTable updatedBrowse">
+						<thead>
+							<tr class="browseListHeader">
+							 	<td class="browseListHeaderCheck"></td>
+							 	<td class="browseListHeaderName">Data ID</td>
+							 	<td class="browseListHeaderName">Comments</td>
+							 	<td class="browseListHeaderName">Created Date</td>
+						       	<td class="browseListHeaderName" >Documents</td>
+						       	<td class="browseListHeaderCheck" style="background-image: none";>
+							 		<input type="checkbox" name="top_checkbox" value="checkbox" onClick="toggle(this);">
+							 	</td>
+						    </tr>
+						</thead>
+						<c:forEach items="${k}" var="element">
+							<tr class="browseRow2" style="color: red">
+								<td align="right" class="browseRow2">
+					    			<a href="#" id="${element.getID()}" onclick="downlaodFile(this.id,'download');" title="Download">Download</a>
+					    			<div id="z85229" class="functionMenuDiv"></div>
+						    	</td>
+								<td align="right"  class="browseRow2"><c:out value="${element.getID()}"/></td>
+							 	<td align="right"  class="browseRow2"><c:out value="${element.getComment()}"/></td>
+							 	<td align="right"  class="browseRow2"><c:out value="${element.getCreateDate()}"/></td>
+								<td align="right"  class="browseRow2">
+					    			<a class="browseItemNameContainer"><c:out value="${element.getName()}"/></a>
+					    			<div id="z85229" class="functionMenuDiv"></div>
+						    	</td>
+						    		
+						    	<td  class="browseListHeaderCheck ">
+									<input   type="checkbox" name="foo" id="ckb" value="${element.getID()}">
+								</td>		
+						    </tr>
+						</c:forEach>
+	 				</table>
+	 			</form>
   			</div>
   			<div id="tabs-3">
     			<p></p>
@@ -195,7 +231,7 @@
 		</div>	
 		</div>
  			<p class="copyright">
-			OpenText Content Server version 16. Copyright © 1995 - 2016 Open Text. All Rights Reserved.
+				OpenText Content Server version 16. Copyright © 1995 - 2016 Open Text. All Rights Reserved.
 			</p>
 </body>
 </html>

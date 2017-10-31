@@ -60,15 +60,51 @@ function deleteFile(checkedValue,Delete)  //Delete Document Request
 	}, 1000);
 }
 		
-		
-		
+
+function Exclude(checkedValue,Exclude) //Exclude documents
+{
+	var w=window.open('http://localhost:8080/UDSDocuManager/DocumentList?dataID='+checkedValue+'&action='+Exclude,+'ExcludedNodes','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=500,height=300');	
+	if ( w.focus )
+	{
+		w.focus();
+	}
+	var timer = setInterval(function() {   
+	    if(w.closed) {  
+	    	window.location.reload(true);
+	        clearInterval(timer);  
+	        //alert('closed');  
+	    }  
+	}, 1000);
+	
+}
 			
 //Jquery Datatables Customization		
-$( function() {
-    $( "#tabs" ).tabs();
-    
-  } );
-$(document).ready(function() {
+/*$(document).ready(function() {
+	$("#tabs").tabs( {
+		"show": function(event, ui) {
+			var oTable = $('div.dataTables_scrollBody>table.browseTable', ui.panel).dataTable();
+			if ( oTable.length > 0 ) {
+				oTable.fnAdjustColumnSizing();
+			}
+		}
+	} );
+} );
+	*/
+	/*$('table.browseTable').dataTable( {
+		"columnDefs": [
+    	    { 
+    	    	"orderable": false, "targets": [0,1,2,3,5] ,
+    	    	
+    	    } ],
+    	    "scrollY": "290px",
+	    	"scrollCollapse": true
+		
+	} );
+	
+
+*/
+
+/*$(document).ready(function() {
     $('#CScontent').DataTable( {
         
     	"columnDefs": [
@@ -78,7 +114,20 @@ $(document).ready(function() {
     	    "scrollY": "290px",
 	    	  "scrollCollapse": true 	   
     } );
+} );*/
+
+/*$(document).ready(function() {
+    $('#Excludecontent').DataTable( {
+        
+    	"columnDefs": [
+    	    { "orderable": false, "targets": [0,1,2,3,5] ,
+    	    	
+    	    } ],
+    	    "scrollY": "290px",
+	    	  "scrollCollapse": true 	   
+    } );
 } );
+*/
 
 
 
@@ -255,17 +304,76 @@ function downloadAllFiles()
 		    }  
 		}, 1000);
 	}
+	
+	if((document.getElementById("Exclude").selected))
+	{
+		var chk=0;
+		var checkedValue = []; 
+		inputElements = document.getElementsByName('foo');
+		for(var i=0; inputElements[i]; ++i)
+		{
+			if(inputElements[i].checked)
+		    {
+				chk=chk+1;
+		    }
+		}
 		
-}
+		if(chk==0)
+		{
+			alert("Please select atleast one")
+		}
+		if(chk>=1)
+		{
+			for(var i=0; inputElements[i]; ++i)
+			{
+				if(inputElements[i].checked)
+			    {
+		           checkedValue[i] = inputElements[i].value;
+		          
+		           //alert(checkedValue)
+			    }
+			}
+			
+		Exclude(checkedValue,'Exclude')
+		inputElements=null;
+		}
+	}
+
+}	
+
 
 		
 //Check Box Functionality to select all		
-function toggle(source) {
-	  checkboxes = document.getElementsByName('foo');
-  for(var i=0, n=checkboxes.length;i<n;i++) {
-	    checkboxes[i].checked = source.checked;
-  }
+function toggle(source) 
+{
+	checkboxes = document.getElementsByName('foo');
+	for(var i=0, n=checkboxes.length;i<n;i++) 
+	{
+		checkboxes[i].checked = source.checked;
+	}
 }
-		
+
+
+$(document).ready(function() {
+    $("#tabs").tabs( {
+        "activate": function(event, ui) {
+            var table = $.fn.dataTable.fnTables(true);
+            if ( table.length > 0 ) {
+                $(table).dataTable().fnAdjustColumnSizing();
+            }
+        }
+    } );
+     
+    $('table.browseTable').dataTable( {
+        "sScrollY": "290px",
+        "bScrollCollapse": true,
+        "bPaginate": true,
+        "bJQueryUI": true,
+        "aoColumnDefs": [
+            { "orderable": false, "targets": [0,1,2,3,5]  }
+        ]
+    } );
+} );
+	
 		
 		

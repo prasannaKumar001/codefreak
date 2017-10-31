@@ -27,11 +27,17 @@ import org.apache.log4j.PropertyConfigurator;
 import com.opentext.ecm.api.OTAuthentication;
 import com.opentext.livelink.service.core.Authentication;
 import com.opentext.livelink.service.core.Authentication_Service;
+import com.opentext.livelink.service.core.BooleanValue;
 import com.opentext.livelink.service.core.ContentService;
 import com.opentext.livelink.service.core.ContentService_Service;
+import com.opentext.livelink.service.core.DataValue;
 import com.opentext.livelink.service.core.FileAtts;
+import com.opentext.livelink.service.core.StringValue;
+import com.opentext.livelink.service.docman.AttributeGroup;
 import com.opentext.livelink.service.docman.DocumentManagement;
 import com.opentext.livelink.service.docman.DocumentManagement_Service;
+import com.opentext.livelink.service.docman.GetMetadataLanguages;
+import com.opentext.livelink.service.docman.Metadata;
 import com.opentext.livelink.service.docman.MoveOptions;
 import com.opentext.livelink.service.docman.Node;
 import com.sun.xml.internal.ws.api.message.Header;
@@ -358,6 +364,8 @@ public class OTUtility {
 			System.out.println("SUCCESS!\n");
 			System.out.println("New document uploaded with ID = " + objectID);
 			
+			int dataid=Integer.valueOf(objectID);
+			OTUtility.addCategory(dataid);
 			
 		}
 		catch (SOAPFaultException | IOException | DatatypeConfigurationException | SOAPException e)
@@ -429,5 +437,207 @@ public class OTUtility {
 		}
 		return "deleted";
 	}
+	
+	public static void addCategory(int dataid)
+	{
+		DocumentManagement docManClient=null;
+		String authToken=null;
+		AttributeGroup categoryTemplate = null;
+		List<AttributeGroup> categoryAttr;
+		List attributes=new ArrayList<>();
+		Metadata metadata=new Metadata();
+		Node n;
+		try
+		{
+			authToken=OTUtility.getAuthToken();
+			docManClient=OTUtility.getDocumentManagement(authToken);
+			categoryTemplate = docManClient.getCategoryTemplate(89745);
+			StringValue directedByValue = (StringValue) categoryTemplate.getValues().get(4);
+			n=docManClient.getNode(dataid);
+			//metadata=n.getMetadata();
+			//attributes = categoryTemplate.getValues();
+			directedByValue.getValues().clear();
+			directedByValue.getValues().add("343435566643645754");
+			
+			
+			metadata.getAttributeGroups().add(categoryTemplate);
+			
+			n.setMetadata(metadata);
+			docManClient.updateNode(n);
+			//n.getMetadata();
+			/*n=docManClient.getNode(88861);
+			metadata=n.getMetadata();
+			
+			categoryAttr=metadata.getAttributeGroups();
+			
+			for(AttributeGroup a:categoryAttr)
+			{
+				System.out.println(a.getKey());
+				List<DataValue> Attributes=a.getValues();
+				for(DataValue d:Attributes)
+				{
+					System.out.println(d.getKey());
+					
+				}
+			}
+			//n.setMetadata(value);
+			 */			
 
+			
+			System.out.println("updated");
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+	public static void updateCategory(int dataid)
+	{
+		DocumentManagement fDocMan=null;
+		Node node;
+		String authToken=null;
+		try
+		{
+			authToken=OTUtility.getAuthToken();
+			fDocMan=OTUtility.getDocumentManagement(authToken);
+			AttributeGroup attrgroup = fDocMan.getCategoryTemplate(89745);
+			String toBeUpdateCatName =attrgroup.getDisplayName();
+			List <AttributeGroup> nodeattrgroups = new ArrayList<AttributeGroup>();
+			node=fDocMan.getNode(dataid);
+			Node processingNode = node;
+			Metadata updateMetadata =processingNode.getMetadata();
+			//String currAttributeName ="";
+			String dataType;
+			   
+			if (updateMetadata!= null )
+			{
+				nodeattrgroups = updateMetadata.getAttributeGroups();	
+			    if (nodeattrgroups.size()>0)
+			    {
+				    for (AttributeGroup atg:nodeattrgroups)
+				    {
+				    	String currCategoryName =atg.getDisplayName();
+				    	if ((currCategoryName.compareToIgnoreCase(toBeUpdateCatName))==0)
+				    	{
+				    		//Update Existing Category Values
+				    		BooleanValue str=(BooleanValue) atg.getValues().get(9);
+				    		str.getValues().clear();
+			    			str.getValues().add(true);
+				    		/*for (DataValue currDataValue:atg.getValues())
+				    		{
+				    			dataType=currDataValue.getClass().getName();
+				    			
+				    			if(dataType.endsWith("StringValue"))
+				    			{
+				    				System.out.println("String");
+				    			}
+				    			if(dataType.endsWith("DateValue"))
+				    			{
+				    				System.out.println("Date");
+				    			}
+				    			if(dataType.endsWith("BooleanValue"))
+				    			{
+				    				System.out.println("boolean");
+				    				BooleanValue str = (BooleanValue) currDataValue;
+					    			str.getValues().clear();
+					    			str.getValues().add(true);
+				    			}*/
+				    			
+				    			//System.out.println("Type: "+currDataValue.getClass().getName());
+				    			//currAttributeName =currDataValue.getDescription();
+				    			
+				    			
+				    			//break;
+				    			//System.out.println("category value: "+currAttributeName.toString());
+				    			// Put the currAttribute name in the HashMap to get value
+				    			// compare if value is not null and then update Value
+		
+				    			/*for(PAttributes pattr: proCat.getProjectAttributes())
+				        		{
+				         			if (currAttributeName.compareToIgnoreCase(pattr.getName())==0){
+				          			if (currDataValue instanceof StringValue){
+				           
+				          		}
+				    		}*/
+				        }
+				    }
+			    }
+			    processingNode.setMetadata(updateMetadata);
+				fDocMan.updateNode(processingNode); 
+			}
+			else
+			{
+				System.out.println("Currently no Category is Attached to this Document ");
+			}
+			   
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static List<Node> excludedNodes(int dataID)
+	{
+		DocumentManagement fDocMan=null;
+		Node node;
+		String authToken=null;
+		List<Node> excludedNodes=new ArrayList<Node>();
+		try
+		{
+			authToken=OTUtility.getAuthToken();
+			fDocMan=OTUtility.getDocumentManagement(authToken);
+			List <AttributeGroup> nodeattrgroups = new ArrayList<AttributeGroup>();
+			//node=fDocMan.getNode(dataID);
+			List<Node> children=fDocMan.listNodes(dataID, false);
+			
+			for(Node nod:children)
+			{
+				
+				Metadata updateMetadata =nod.getMetadata();
+				//String currAttributeName ="";
+				String dataType;
+			   
+				if (updateMetadata!= null )
+				{
+					nodeattrgroups = updateMetadata.getAttributeGroups();	
+					if (nodeattrgroups.size()>0)
+					{
+						for (AttributeGroup atg:nodeattrgroups)
+						{
+							if(atg!=null)
+							{
+								//Update Existing Category Values
+								BooleanValue str=(BooleanValue) atg.getValues().get(9);
+								List<Boolean> flag=str.getValues();
+								//System.out.println(flag.size());
+								if(flag.size()!=0)
+								{
+									for(Boolean b:flag)
+									{
+										if(b)
+										{
+											excludedNodes.add(nod);
+										}
+									}
+								}
+							}
+							
+				    			
+						}
+					}
+		
+		
+				}
+			}
+	
+	
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return excludedNodes;
+	}
+	
 }
