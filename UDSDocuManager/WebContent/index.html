@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>DM</title>
+	<script type="text/javascript">
+
+	function doOpenDocuments(  )
+	{
+		
+	var		w = window.open('http://localhost:8080/UDSDocuManager/ListFiles.jsp','doOpenDocuments','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=1600,height=420');
+
+	if ( w.focus )
+	{
+	w.focus();
+	}
+	}
+	</script>
+</head>
+<body>
+	<a href="#" onclick="doOpenDocuments()">List All Documents</a>
+</body>
+</html>

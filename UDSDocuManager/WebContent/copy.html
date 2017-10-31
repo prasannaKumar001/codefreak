@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Copy document</title>
+	<script type="text/javascript">
+	
+	function copyFile()
+	{
+		var URL_string=window.location.href
+		//var URL=new URL(URL_string);
+		//var dataID = URL.searchParams.get("dataID");
+		//var feature = URL.searchParams.get("feature");
+		//var urlParamString = location.search.split(param + "?");
+		//var tmp = urlParamString[1].split("&");
+		var URL_param=URL_string.split("?");
+		var dataID=document.getElementsByName("rqst")[0].value;
+		var name=document.getElementsByName("name")[0].value;
+		//alert('http://localhost:8080/UDSDocuManager/DocumentList?'+URL_param[1]+'&dataID'+dataID+'&name='+name)
+		window.location.href ='http://localhost:8080/UDSDocuManager/DocumentList?'+URL_param[1]+'&parentID='+dataID+'&name='+name;
+	}
+	</script>
+</head>
+<body>
+	<form action="javascript:copyFile();">
+  	Request No:<input type="text" name="rqst" value=""><br>
+  	New Name:<input type="text" name="name" value="">
+ 	<br><br>
+  	<input type="submit" value="Copy">
+	</form> 
+</body>
+</html>
